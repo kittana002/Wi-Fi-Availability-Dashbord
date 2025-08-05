@@ -104,7 +104,25 @@
                 </div>
             </div>
 
-            <!-- Section 3 -->
+            <!-- Section 3: New Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 <!-- สัดส่วนผู้ใช้งาน (Client) ตามจังหวัด -->
+                 <div class="card">
+                    <h3 class="header-title text-center">สัดส่วนผู้ใช้งาน (Client) ตามจังหวัด (Top 7)</h3>
+                    <div class="chart-container mt-2" style="height: 350px;">
+                        <canvas id="provinceClientChart"></canvas>
+                    </div>
+                </div>
+                <!-- อันดับภาคตามปริมาณใช้งาน (Usage) -->
+                <div class="card">
+                    <h3 class="header-title text-center">อันดับภาคตามปริมาณใช้งาน (Usage)</h3>
+                    <div class="chart-container mt-2" style="height: 350px;">
+                        <canvas id="regionUsageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4 -->
             <div class="card">
                 <h2 class="header-title">สรุปข้อมูลการใช้งานรายสาขา</h2>
                 <p class="sub-header">20 อันดับแรกตามปริมาณการใช้งานและจำนวนผู้ใช้</p>
@@ -129,7 +147,7 @@
 
     <script>
         // --- Professional Color Palette ---
-        const professionalColors = ['#36A2EB', '#4BC0C0', '#FFCD56', '#FF9F40', '#9966FF', '#C9CBCF'];
+        const professionalColors = ['#36A2EB', '#4BC0C0', '#FFCD56', '#FF9F40', '#9966FF', '#C9CBCF', '#FF6384', '#A9A9A9'];
         const primaryColor = 'rgba(54, 162, 235, 0.8)'; // Blue
         const primaryBorderColor = 'rgba(54, 162, 235, 1)';
         const secondaryColor = 'rgba(75, 192, 192, 0.8)'; // Teal
@@ -239,6 +257,63 @@
             },
             options: {
                 indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } }
+            }
+        });
+
+        // --- New Chart: Province Client Pie ---
+        const provinceClientCtx = document.getElementById('provinceClientChart').getContext('2d');
+        const sortedProvincesByClient = Object.entries(provinceSummary).sort(([,a],[,b]) => b.client - a.client);
+        const top7Provinces = sortedProvincesByClient.slice(0, 7);
+        const otherProvincesClient = sortedProvincesByClient.slice(7).reduce((sum, current) => sum + current[1].client, 0);
+        const provinceClientLabels = top7Provinces.map(p => p[0]);
+        const provinceClientData = top7Provinces.map(p => p[1].client);
+        if (otherProvincesClient > 0) {
+            provinceClientLabels.push('อื่น ๆ');
+            provinceClientData.push(otherProvincesClient);
+        }
+        new Chart(provinceClientCtx, {
+            type: 'pie',
+            data: {
+                labels: provinceClientLabels,
+                datasets: [{
+                    label: 'จำนวน Client',
+                    data: provinceClientData,
+                    backgroundColor: professionalColors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // --- New Chart: Region Usage Bar ---
+        const regionUsageCtx = document.getElementById('regionUsageChart').getContext('2d');
+        const sortedRegionsByUsage = Object.entries(regionSummary).sort(([,a],[,b]) => b.usage - a.usage);
+        const regionUsageLabels = sortedRegionsByUsage.map(r => r[0]);
+        const regionUsageData = sortedRegionsByUsage.map(r => r[1].usage.toFixed(2));
+        new Chart(regionUsageCtx, {
+            type: 'bar',
+            data: {
+                labels: regionUsageLabels,
+                datasets: [{
+                    label: 'Usage (GB)',
+                    data: regionUsageData,
+                    backgroundColor: primaryColor,
+                    borderColor: primaryBorderColor,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
