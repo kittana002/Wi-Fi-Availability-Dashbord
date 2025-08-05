@@ -16,7 +16,6 @@
         }
         .chart-container {
             position: relative;
-            height: 300px;
             width: 100%;
         }
         .card {
@@ -45,72 +44,99 @@
 
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
-        <header class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">แดชบอร์ดสรุปข้อมูล Wi-Fi</h1>
-            <p class="text-gray-500 mt-1">ภาพรวมประสิทธิภาพและปัญหาของระบบ Wi-Fi ประจำเดือน</p>
+        <header class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+             <div>
+                <h1 class="text-3xl font-bold text-gray-800">แดชบอร์ดสรุปข้อมูล Wi-Fi</h1>
+                <p class="text-gray-500 mt-1">ภาพรวมประสิทธิภาพและปัญหาของระบบ Wi-Fi ประจำเดือน</p>
+             </div>
+             <button class="mt-4 sm:mt-0 w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                ดาวน์โหลดรายงานฉบับเต็ม
+            </button>
         </header>
 
-        <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            <!-- 1. Wi-Fi Availability (รายเดือน) -->
-            <div class="lg:col-span-2 card">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h2 class="header-title">Wi-Fi Availability (รายเดือน)</h2>
-                        <p class="sub-header">เปอร์เซ็นต์ความพร้อมใช้งานของสัญญาณ Wi-Fi</p>
+        <!-- Main Layout -->
+        <div class="flex flex-col gap-6">
+            
+            <!-- Section 1 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Wi-Fi Availability (รายเดือน) -->
+                <div class="card">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="header-title">Wi-Fi Availability (รายเดือน)</h2>
+                            <p class="sub-header">เปอร์เซ็นต์ความพร้อมใช้งานของสัญญาณ Wi-Fi</p>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-3xl font-bold text-teal-600" id="avgAvailability">99.85%</p>
+                             <p class="text-sm text-gray-500">เฉลี่ยเดือนนี้</p>
+                        </div>
                     </div>
-                    <div class="text-right">
-                         <p class="text-3xl font-bold text-green-500" id="avgAvailability">99.85%</p>
-                         <p class="text-sm text-gray-500">เฉลี่ยเดือนนี้</p>
+                    <div class="mt-4 chart-container" style="height: 350px;">
+                        <canvas id="availabilityChart"></canvas>
                     </div>
                 </div>
-                <div class="mt-4 chart-container">
-                    <canvas id="availabilityChart"></canvas>
+                <!-- จำนวน Fault Wi-Fi แบ่งตาม Zone -->
+                <div class="card">
+                    <h2 class="header-title">จำนวน Fault Wi-Fi ตามโซน</h2>
+                    <p class="sub-header">สัดส่วนปัญหาที่เกิดขึ้นในแต่ละพื้นที่</p>
+                    <div class="mt-4 chart-container" style="height: 350px;">
+                        <canvas id="faultZoneChart"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <!-- 2. จำนวน Fault Wi-Fi แบ่งตาม Zone -->
-            <div class="card flex flex-col">
-                <h2 class="header-title">จำนวน Fault Wi-Fi ตามโซน</h2>
-                <p class="sub-header">สัดส่วนปัญหาที่เกิดขึ้นในแต่ละพื้นที่</p>
-                <div class="mt-4 chart-container flex-grow" style="height: 320px;">
-                    <canvas id="faultZoneChart"></canvas>
+            <!-- Section 2 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- สัดส่วนผู้ใช้งาน (Client) ตามภาค -->
+                <div class="card">
+                    <h3 class="header-title text-center">สัดส่วนผู้ใช้งาน (Client) ตามภาค</h3>
+                    <div class="chart-container mt-2" style="height: 350px;">
+                        <canvas id="regionClientChart"></canvas>
+                    </div>
+                </div>
+                <!-- 10 อันดับจังหวัดตามปริมาณใช้งาน (Usage) -->
+                <div class="card">
+                    <h3 class="header-title text-center">10 อันดับจังหวัดตามปริมาณใช้งาน (Usage)</h3>
+                    <div class="chart-container mt-2" style="height: 350px;">
+                        <canvas id="provinceUsageChart"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <!-- 3. Monthly Usage & User Report -->
-            <div class="lg:col-span-3 card">
-                <div class="flex flex-col sm:flex-row justify-between items-start mb-4">
-                    <div>
-                        <h2 class="header-title">สรุปข้อมูลการใช้งานรายสาขา</h2>
-                        <p class="sub-header mt-1">ภาพรวมการใช้งานและจำนวนผู้ใช้จาก 15,000 สาขา</p>
-                    </div>
-                    <button class="mt-4 sm:mt-0 w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center justify-center flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        ดาวน์โหลดรายงานฉบับเต็ม
-                    </button>
-                </div>
-
+            <!-- Section 3 -->
+            <div class="card">
+                <h2 class="header-title">สรุปข้อมูลการใช้งานรายสาขา</h2>
+                <p class="sub-header">20 อันดับแรกตามปริมาณการใช้งานและจำนวนผู้ใช้</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12 mt-4">
                     <div>
-                        <h3 class="font-bold text-center text-gray-700">20 อันดับสาขาตามปริมาณการใช้งาน (Usage)</h3>
+                        <h3 class="font-bold text-center text-gray-700">ปริมาณการใช้งาน (Usage)</h3>
                         <div class="chart-container mt-2" style="height: 450px;">
                             <canvas id="topUsageChart"></canvas>
                         </div>
                     </div>
                     <div>
-                        <h3 class="font-bold text-center text-gray-700">20 อันดับสาขาตามจำนวนผู้ใช้ (Client)</h3>
+                        <h3 class="font-bold text-center text-gray-700">จำนวนผู้ใช้ (Client)</h3>
                         <div class="chart-container mt-2" style="height: 450px;">
                             <canvas id="topUsersChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
+        // --- Professional Color Palette ---
+        const professionalColors = ['#36A2EB', '#4BC0C0', '#FFCD56', '#FF9F40', '#9966FF', '#C9CBCF'];
+        const primaryColor = 'rgba(54, 162, 235, 0.8)'; // Blue
+        const primaryBorderColor = 'rgba(54, 162, 235, 1)';
+        const secondaryColor = 'rgba(75, 192, 192, 0.8)'; // Teal
+        const secondaryBorderColor = 'rgba(75, 192, 192, 1)';
+        const accentColor = 'rgba(255, 159, 64, 0.8)'; // Orange
+        const accentBorderColor = 'rgba(255, 159, 64, 1)';
+
         // --- Mock Data for top charts ---
         const daysInMonth = Array.from({ length: 30 }, (_, i) => `วันที่ ${i + 1}`);
         const availabilityData = Array.from({ length: 30 }, () => 99.5 + Math.random() * 0.5);
@@ -119,7 +145,6 @@
 
         const faultZones = ['กรุงเทพและปริมณฑล', 'ภาคเหนือ', 'ภาคตะวันออกเฉียงเหนือ', 'ภาคกลาง', 'ภาคตะวันออก', 'ภาคใต้'];
         const faultData = [120, 55, 80, 60, 45, 70];
-        const faultColors = ['#4F46E5', '#10B981', '#F59E0B', '#3B82F6', '#EF4444', '#8B5CF6'];
 
         // --- Real Data from User ---
         const top20ClientData = {
@@ -151,19 +176,76 @@
             ]
         };
         
+        // --- Data Processing for Region and Province Charts ---
+        const allBranchesData = [
+            { id: 19854, name: 'Ao Tonsai Beach', region: 'ภาคใต้', province: 'กระบี่', client: 10849, usage: 112.22 }, { id: 20200, name: 'พร้อมดินแดง', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 7123, usage: 108.13 }, { id: 19990, name: 'ศาลายามาร์เก็ต', region: 'ภาคกลาง', province: 'นครปฐม', client: 6733, usage: 131.10 }, { id: 5038, name: 'ประชานุเคราะห์ 2', region: 'ภาคใต้', province: 'ภูเก็ต', client: 6100, usage: 255.14 }, { id: 3807, name: 'สี่แยกทรายรี', region: '#N/A', province: '#N/A', client: 5605, usage: 196.28 }, { id: 8354, name: 'ปตท.เพชรบุรีล้ำยุค (วังมะนาว) จุด 1', region: 'ภาคตะวันตก', province: 'เพชรบุรี', client: 5274, usage: 75.47 }, { id: 1159, name: 'ต้นลำใย', region: 'ภาคเหนือ', province: 'เชียงใหม่', client: 5248, usage: 552.80 }, { id: 10281, name: 'ตลาดโต้รุ่งกาญจน์', region: 'ภาคตะวันตก', province: 'กาญจนบุรี', client: 5187, usage: 90.43 }, { id: 5039, name: 'ตลาดทรายรี', region: '#N/A', province: '#N/A', client: 5001, usage: 216.58 }, { id: 1941, name: 'หาดแม่หาด', region: '#N/A', province: '#N/A', client: 4917, usage: 183.03 }, { id: 19150, name: 'สาย2จอมเทียน ตลาดร่มโพธิ์ (พัทยา)', region: 'ภาคตะวันออก', province: 'ชลบุรี', client: 4888, usage: 74.76 }, { id: 8094, name: 'บุลำดวน', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'บุรีรัมย์', client: 4680, usage: 170.99 }, { id: 6200, name: 'เจ็ดยอดพลาซ่า', region: 'ภาคเหนือ', province: 'เชียงใหม่', client: 4670, usage: 544.86 }, { id: 15448, name: 'BMN MRT จตุจักร', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 4274, usage: 203.13 }, { id: 18180, name: 'พัทยาสาย 1 เบย์วอล์ค', region: 'ภาคตะวันออก', province: 'ชลบุรี', client: 4265, usage: 233.46 }, { id: 20260, name: 'นาเกลือ ซอย 16-หาดยาว (ชลบุรี)', region: 'ภาคตะวันออก', province: 'ชลบุรี', client: 4257, usage: 103.64 }, { id: 2233, name: 'อยุธยาเมืองใหม่ ซอย 3', region: 'ภาคกลาง', province: 'พระนครศรีอยุธยา', client: 4212, usage: 439.32 }, { id: 22515, name: 'Buddy (ถนนข้าวสาร)', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 4184, usage: 98.24 }, { id: 6661, name: 'หอนาฬิกา 2', region: 'ภาคเหนือ', province: 'เชียงราย', client: 4167, usage: 384.65 }, { id: 202, name: 'เอกมัย', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 4138, usage: 54.88 }, { id: 754, name: 'วิเศษชัยชาญ', region: 'ภาคกลาง', province: 'อ่างทอง', client: 3593, usage: 953.84 }, { id: 13471, name: 'แครายเทพกาญจนา', region: 'ภาคกลาง', province: 'สมุทรสาคร', client: 2688, usage: 767.06 }, { id: 5305, name: 'ชุมชนวัดเชิงเขา (สระบุรี)', region: 'ภาคกลาง', province: 'สระบุรี', client: 2128, usage: 664.63 }, { id: 18966, name: 'ชุมชนชัยมงคล(ชะอำ)', region: 'ภาคตะวันตก', province: 'เพชรบุรี', client: 1851, usage: 633.97 }, { id: 4061, name: 'ปตท.ดอนหวาย', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'นครราชสีมา', client: 2130, usage: 610.60 }, { id: 9710, name: 'PTTOR ประจักษ์ศิลปาคม', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'อุดรธานี', client: 2814, usage: 562.67 }, { id: 18369, name: 'มิตรสัมพันธ์ ซ.18', region: 'ภาคตะวันออก', province: 'ชลบุรี', client: 1810, usage: 548.26 }, { id: 9473, name: 'หอพักสวนดอก (ถ.ศิริมังคลาจารย์)', region: '#N/A', province: '#N/A', client: 692, usage: 538.86 }, { id: 18338, name: 'ลาดบัวขาว', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'นครราชสีมา', client: 1937, usage: 533.82 }, { id: 5561, name: 'ตลาดรถไฟบ้านไผ่', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'ขอนแก่น', client: 2295, usage: 515.99 }, { id: 3155, name: 'ท่ารถขนส่งอยุธยา', region: 'ภาคกลาง', province: 'พระนครศรีอยุธยา', client: 3087, usage: 495.62 }, { id: 13486, name: 'PTTOR ธรรมศาลา (ขาเข้า)', region: 'ภาคกลาง', province: 'นครปฐม', client: 3229, usage: 492.64 }, { id: 5892, name: 'ตลาดเทศบาล (นครปฐม)', region: 'ภาคกลาง', province: 'นครปฐม', client: 2664, usage: 479.70 }, { id: 3955, name: 'PTTORมิตรภาพเลิศสวัสดิ์', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'นครราชสีมา', client: 3283, usage: 459.21 }, { id: 18349, name: 'เพิ่มสิน 3', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 2732, usage: 452.53 }, { id: 8780, name: 'ปตท.ตลิ่งชัน (บรมราชชนนี)', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 1469, usage: 447.30 }, { id: 18373, name: 'นาพระชัย', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'นครพนม', client: 1397, usage: 441.33 },
+        ];
+
+        const regionSummary = allBranchesData.reduce((acc, branch) => { const region = branch.region; if (region && region !== '#N/A') { if (!acc[region]) { acc[region] = { client: 0, usage: 0 }; } acc[region].client += branch.client; acc[region].usage += branch.usage; } return acc; }, {});
+        const provinceSummary = allBranchesData.reduce((acc, branch) => { const province = branch.province; if (province && province !== '#N/A') { if (!acc[province]) { acc[province] = { client: 0, usage: 0 }; } acc[province].client += branch.client; acc[province].usage += branch.usage; } return acc; }, {});
+        
         // --- Chart Rendering ---
         const availabilityCtx = document.getElementById('availabilityChart').getContext('2d');
-        new Chart(availabilityCtx, { type: 'line', data: { labels: daysInMonth, datasets: [{ label: 'Availability (%)', data: availabilityData, borderColor: 'rgba(22, 163, 74, 0.8)', backgroundColor: 'rgba(22, 163, 74, 0.1)', fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6, pointBackgroundColor: 'rgba(22, 163, 74, 1)' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 98.5, max: 100, ticks: { callback: (value) => value + '%' } }, x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 15 } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `Availability: ${context.raw.toFixed(2)}%` } } } } });
+        new Chart(availabilityCtx, { type: 'line', data: { labels: daysInMonth, datasets: [{ label: 'Availability (%)', data: availabilityData, borderColor: secondaryBorderColor, backgroundColor: 'rgba(75, 192, 192, 0.2)', fill: true, tension: 0.4, pointRadius: 2, pointBackgroundColor: secondaryBorderColor }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 98.5, max: 100, ticks: { callback: (value) => value + '%' } }, x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 15 } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `Availability: ${context.raw.toFixed(2)}%` } } } } });
         
         const faultZoneCtx = document.getElementById('faultZoneChart').getContext('2d');
-        new Chart(faultZoneCtx, { type: 'doughnut', data: { labels: faultZones, datasets: [{ label: 'จำนวน Faults', data: faultData, backgroundColor: faultColors, hoverOffset: 4, borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 15, boxWidth: 12, usePointStyle: true, pointStyle: 'circle' } } } } });
+        new Chart(faultZoneCtx, { type: 'doughnut', data: { labels: faultZones, datasets: [{ label: 'จำนวน Faults', data: faultData, backgroundColor: professionalColors, hoverOffset: 4, borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 15, boxWidth: 12, usePointStyle: true, pointStyle: 'circle' } } } } });
         
         const topUsageCtx = document.getElementById('topUsageChart').getContext('2d');
-        new Chart(topUsageCtx, { type: 'bar', data: { labels: top20UsageData.labels, datasets: [{ label: 'Usage (GB)', data: top20UsageData.data, backgroundColor: 'rgba(59, 130, 246, 0.7)', borderColor: 'rgba(59, 130, 246, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } } } });
+        new Chart(topUsageCtx, { type: 'bar', data: { labels: top20UsageData.labels, datasets: [{ label: 'Usage (GB)', data: top20UsageData.data, backgroundColor: primaryColor, borderColor: primaryBorderColor, borderWidth: 1, borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } } } });
         
         const topUsersCtx = document.getElementById('topUsersChart').getContext('2d');
-        new Chart(topUsersCtx, { type: 'bar', data: { labels: top20ClientData.labels, datasets: [{ label: 'จำนวน Client', data: top20ClientData.data, backgroundColor: 'rgba(16, 185, 129, 0.7)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1, borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'จำนวน Client (คน)' } } } } });
-    </script>
+        new Chart(topUsersCtx, { type: 'bar', data: { labels: top20ClientData.labels, datasets: [{ label: 'จำนวน Client', data: top20ClientData.data, backgroundColor: secondaryColor, borderColor: secondaryBorderColor, borderWidth: 1, borderRadius: 4 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, title: { display: true, text: 'จำนวน Client (คน)' } } } } });
 
+        const regionClientCtx = document.getElementById('regionClientChart').getContext('2d');
+        const regionLabels = Object.keys(regionSummary);
+        const regionClientData = regionLabels.map(region => regionSummary[region].client);
+        new Chart(regionClientCtx, {
+            type: 'pie',
+            data: {
+                labels: regionLabels,
+                datasets: [{
+                    label: 'จำนวน Client',
+                    data: regionClientData,
+                    backgroundColor: professionalColors,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        const provinceUsageCtx = document.getElementById('provinceUsageChart').getContext('2d');
+        const sortedProvinces = Object.entries(provinceSummary).sort(([,a],[,b]) => b.usage - a.usage).slice(0, 10);
+        const provinceLabels = sortedProvinces.map(p => p[0]);
+        const provinceUsageData = sortedProvinces.map(p => p[1].usage.toFixed(2));
+        new Chart(provinceUsageCtx, {
+            type: 'bar',
+            data: {
+                labels: provinceLabels,
+                datasets: [{
+                    label: 'Usage (GB)',
+                    data: provinceUsageData,
+                    backgroundColor: accentColor,
+                    borderColor: accentBorderColor,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } }
+            }
+        });
+
+    </script>
 </body>
 </html>
