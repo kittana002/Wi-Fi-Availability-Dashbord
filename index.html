@@ -68,7 +68,7 @@
                             <p class="sub-header">เปอร์เซ็นต์ความพร้อมใช้งานของสัญญาณ Wi-Fi</p>
                         </div>
                         <div class="text-right">
-                             <p class="text-3xl font-bold text-teal-600" id="avgAvailability">99.85%</p>
+                             <p class="text-3xl font-bold text-teal-600" id="avgAvailability">0%</p>
                              <p class="text-sm text-gray-500">เฉลี่ยเดือนนี้</p>
                         </div>
                     </div>
@@ -141,6 +141,14 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Section 5: Lowest Availability -->
+            <div class="card">
+                <h2 class="header-title text-center">10 อันดับสาขาที่ Availability ต่ำที่สุด</h2>
+                <div class="chart-container mt-2" style="height: 350px;">
+                    <canvas id="lowestAvailabilityChart"></canvas>
+                </div>
+            </div>
 
         </div>
     </div>
@@ -154,57 +162,85 @@
         const secondaryBorderColor = 'rgba(75, 192, 192, 1)';
         const accentColor = 'rgba(255, 159, 64, 0.8)'; // Orange
         const accentBorderColor = 'rgba(255, 159, 64, 1)';
+        const dangerColor = 'rgba(255, 99, 132, 0.8)'; // Red
+        const dangerBorderColor = 'rgba(255, 99, 132, 1)';
 
-        // --- Mock Data for top charts ---
-        const daysInMonth = Array.from({ length: 30 }, (_, i) => `วันที่ ${i + 1}`);
-        const availabilityData = Array.from({ length: 30 }, () => 99.5 + Math.random() * 0.5);
-        const avgAvailability = (availabilityData.reduce((a, b) => a + b, 0) / availabilityData.length).toFixed(2);
-        document.getElementById('avgAvailability').textContent = `${avgAvailability}%`;
-
+        // --- Mock Data for Faults ---
         const faultZones = ['กรุงเทพและปริมณฑล', 'ภาคเหนือ', 'ภาคตะวันออกเฉียงเหนือ', 'ภาคกลาง', 'ภาคตะวันออก', 'ภาคใต้'];
         const faultData = [120, 55, 80, 60, 45, 70];
 
-        // --- Real Data from User ---
-        const top20ClientData = {
-            labels: [
-                '19854 - Ao Tonsai Beach', '20200 - พร้อมดินแดง', '19990 - ศาลายามาร์เก็ต', '5038 - ประชานุเคราะห์ 2',
-                '3807 - สี่แยกทรายรี', '8354 - ปตท.เพชรบุรีล้ำยุค (วังมะนาว) จุด 1', '1159 - ต้นลำใย', '10281 - ตลาดโต้รุ่งกาญจน์',
-                '5039 - ตลาดทรายรี', '1941 - หาดแม่หาด', '19150 - สาย2จอมเทียน ตลาดร่มโพธิ์ (พัทยา)', '8094 - บุลำดวน',
-                '6200 - เจ็ดยอดพลาซ่า', '15448 - BMN MRT จตุจักร', '18180 - พัทยาสาย 1 เบย์วอล์ค', '20260 - นาเกลือ ซอย 16-หาดยาว (ชลบุรี)',
-                '2233 - อยุธยาเมืองใหม่ ซอย 3', '22515 - Buddy (ถนนข้าวสาร)', '6661 - หอนาฬิกา 2', '202 - เอกมัย'
-            ],
-            data: [
-                10849, 7123, 6733, 6100, 5605, 5274, 5248, 5187, 5001, 4917, 4888, 4680,
-                4670, 4274, 4265, 4257, 4212, 4184, 4167, 4138
-            ]
-        };
-
-        const top20UsageData = {
-            labels: [
-                '754 - วิเศษชัยชาญ', '13471 - แครายเทพกาญจนา', '5305 - ชุมชนวัดเชิงเขา (สระบุรี)', '18966 - ชุมชนชัยมงคล(ชะอำ)',
-                '4061 - ปตท.ดอนหวาย', '9710 - PTTOR ประจักษ์ศิลปาคม', '1159 - ต้นลำใย', '18369 - มิตรสัมพันธ์ ซ.18',
-                '6200 - เจ็ดยอดพลาซ่า', '9473 - หอพักสวนดอก (ถ.ศิริมังคลาจารย์)', '18338 - ลาดบัวขาว', '5561 - ตลาดรถไฟบ้านไผ่',
-                '3155 - ท่ารถขนส่งอยุธยา', '13486 - PTTOR ธรรมศาลา (ขาเข้า)', '5892 - ตลาดเทศบาล (นครปฐม)', '3955 - PTTORมิตรภาพเลิศสวัสดิ์',
-                '18349 - เพิ่มสิน 3', '8780 - ปตท.ตลิ่งชัน (บรมราชชนนี)', '18373 - นาพระชัย', '2233 - อยุธยาเมืองใหม่ ซอย 3'
-            ],
-            data: [
-                953.84, 767.06, 664.63, 633.97, 610.60, 562.67, 552.80, 548.26, 544.86,
-                538.86, 533.82, 515.99, 495.62, 492.64, 479.70, 459.21, 452.53, 447.30,
-                441.33, 439.32
-            ]
-        };
-        
-        // --- Data Processing for Region and Province Charts ---
+        // --- Data from User's CSV ---
         const allBranchesData = [
-            { id: 19854, name: 'Ao Tonsai Beach', region: 'ภาคใต้', province: 'กระบี่', client: 10849, usage: 112.22 }, { id: 20200, name: 'พร้อมดินแดง', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 7123, usage: 108.13 }, { id: 19990, name: 'ศาลายามาร์เก็ต', region: 'ภาคกลาง', province: 'นครปฐม', client: 6733, usage: 131.10 }, { id: 5038, name: 'ประชานุเคราะห์ 2', region: 'ภาคใต้', province: 'ภูเก็ต', client: 6100, usage: 255.14 }, { id: 3807, name: 'สี่แยกทรายรี', region: '#N/A', province: '#N/A', client: 5605, usage: 196.28 }, { id: 8354, name: 'ปตท.เพชรบุรีล้ำยุค (วังมะนาว) จุด 1', region: 'ภาคตะวันตก', province: 'เพชรบุรี', client: 5274, usage: 75.47 }, { id: 1159, name: 'ต้นลำใย', region: 'ภาคเหนือ', province: 'เชียงใหม่', client: 5248, usage: 552.80 }, { id: 10281, name: 'ตลาดโต้รุ่งกาญจน์', region: 'ภาคตะวันตก', province: 'กาญจนบุรี', client: 5187, usage: 90.43 }, { id: 5039, name: 'ตลาดทรายรี', region: '#N/A', province: '#N/A', client: 5001, usage: 216.58 }, { id: 1941, name: 'หาดแม่หาด', region: '#N/A', province: '#N/A', client: 4917, usage: 183.03 }, { id: 19150, name: 'สาย2จอมเทียน ตลาดร่มโพธิ์ (พัทยา)', region: 'ภาคตะวันออก', province: 'ชลบุรี', client: 4888, usage: 74.76 }, { id: 8094, name: 'บุลำดวน', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'บุรีรัมย์', client: 4680, usage: 170.99 }, { id: 6200, name: 'เจ็ดยอดพลาซ่า', region: 'ภาคเหนือ', province: 'เชียงใหม่', client: 4670, usage: 544.86 }, { id: 15448, name: 'BMN MRT จตุจักร', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 4274, usage: 203.13 }, { id: 18180, name: 'พัทยาสาย 1 เบย์วอล์ค', region: 'ภาคตะวันออก', province: 'ชลบุรี', client: 4265, usage: 233.46 }, { id: 20260, name: 'นาเกลือ ซอย 16-หาดยาว (ชลบุรี)', region: 'ภาคตะวันออก', province: 'ชลบุรี', client: 4257, usage: 103.64 }, { id: 2233, name: 'อยุธยาเมืองใหม่ ซอย 3', region: 'ภาคกลาง', province: 'พระนครศรีอยุธยา', client: 4212, usage: 439.32 }, { id: 22515, name: 'Buddy (ถนนข้าวสาร)', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 4184, usage: 98.24 }, { id: 6661, name: 'หอนาฬิกา 2', region: 'ภาคเหนือ', province: 'เชียงราย', client: 4167, usage: 384.65 }, { id: 202, name: 'เอกมัย', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 4138, usage: 54.88 }, { id: 754, name: 'วิเศษชัยชาญ', region: 'ภาคกลาง', province: 'อ่างทอง', client: 3593, usage: 953.84 }, { id: 13471, name: 'แครายเทพกาญจนา', region: 'ภาคกลาง', province: 'สมุทรสาคร', client: 2688, usage: 767.06 }, { id: 5305, name: 'ชุมชนวัดเชิงเขา (สระบุรี)', region: 'ภาคกลาง', province: 'สระบุรี', client: 2128, usage: 664.63 }, { id: 18966, name: 'ชุมชนชัยมงคล(ชะอำ)', region: 'ภาคตะวันตก', province: 'เพชรบุรี', client: 1851, usage: 633.97 }, { id: 4061, name: 'ปตท.ดอนหวาย', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'นครราชสีมา', client: 2130, usage: 610.60 }, { id: 9710, name: 'PTTOR ประจักษ์ศิลปาคม', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'อุดรธานี', client: 2814, usage: 562.67 }, { id: 18369, name: 'มิตรสัมพันธ์ ซ.18', region: 'ภาคตะวันออก', province: 'ชลบุรี', client: 1810, usage: 548.26 }, { id: 9473, name: 'หอพักสวนดอก (ถ.ศิริมังคลาจารย์)', region: '#N/A', province: '#N/A', client: 692, usage: 538.86 }, { id: 18338, name: 'ลาดบัวขาว', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'นครราชสีมา', client: 1937, usage: 533.82 }, { id: 5561, name: 'ตลาดรถไฟบ้านไผ่', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'ขอนแก่น', client: 2295, usage: 515.99 }, { id: 3155, name: 'ท่ารถขนส่งอยุธยา', region: 'ภาคกลาง', province: 'พระนครศรีอยุธยา', client: 3087, usage: 495.62 }, { id: 13486, name: 'PTTOR ธรรมศาลา (ขาเข้า)', region: 'ภาคกลาง', province: 'นครปฐม', client: 3229, usage: 492.64 }, { id: 5892, name: 'ตลาดเทศบาล (นครปฐม)', region: 'ภาคกลาง', province: 'นครปฐม', client: 2664, usage: 479.70 }, { id: 3955, name: 'PTTORมิตรภาพเลิศสวัสดิ์', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'นครราชสีมา', client: 3283, usage: 459.21 }, { id: 18349, name: 'เพิ่มสิน 3', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 2732, usage: 452.53 }, { id: 8780, name: 'ปตท.ตลิ่งชัน (บรมราชชนนี)', region: 'ภาคกลาง', province: 'กรุงเทพมหานคร', client: 1469, usage: 447.30 }, { id: 18373, name: 'นาพระชัย', region: 'ภาคตะวันออกเฉียงเหนือ', province: 'นครพนม', client: 1397, usage: 441.33 },
-        ];
+            { name: '7-11 มรภ.ราชนครินทร์ บางคล้า (9480)', province: 'ฉะเชิงเทรา', region: 'ภาคตะวันออก', usage: 207.58, client: 166, date: '2025-08-01', availability: 53.3 },
+            { name: '7-11 หมู่บ้านหงส์ประยูร (3118)', province: 'นนทบุรี', region: 'ภาคกลาง', usage: 117.78, client: 165, date: '2025-08-11', availability: 3.3 },
+            { name: '7-11 รพ.บางละมุง (18061)', province: 'ชลบุรี', region: 'ภาคตะวันออก', usage: 69.75, client: 370, date: '2025-08-05', availability: 190 },
+            { name: '7-11 ข้างบิ๊กซีอุบล (9035)', province: 'อุบลราชธานี', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 56.91, client: 39, date: '2025-08-10', availability: 136.7 },
+            { name: '7-11 ตลาดเซฟวัน จุด 2 (10165)', province: 'นครราชสีมา', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 48.65, client: 216, date: '2025-08-02', availability: 56.7 },
+            { name: '7-11 ปตท.หนองเสม็ด (11046)', province: 'ตราด', region: 'ภาคตะวันออก', usage: 48.06, client: 147, date: '2025-08-03', availability: 153.3 },
+            { name: '7-11 ปตท.เทพารักษ์ กม.15 (10221)', province: 'สมุทรปราการ', region: 'ภาคกลาง', usage: 44.82, client: 243, date: '2025-08-03', availability: 120 },
+            { name: '7-11 ปตท.วังน้อย (11030)', province: 'พระนครศรีอยุธยา', region: 'ภาคกลาง', usage: 43.19, client: 254, date: '2025-08-03', availability: 20 },
+            { name: '7-11 ตลาดสดเทศบาลระนอง (10015)', province: 'ระนอง', region: 'ภาคใต้', usage: 42.14, client: 261, date: '2025-08-10', availability: 36.7 },
+            { name: '7-11 ปตท.บายพาสชลบุรี (10196)', province: 'ชลบุรี', region: 'ภาคตะวันออก', usage: 40.76, client: 350, date: '2025-08-12', availability: 33.3 },
+            { name: '7-11 ตลาดสดคลองด่าน (4473)', province: 'สมุทรปราการ', region: 'ภาคกลาง', usage: 39.5, client: 167, date: '2025-08-01', availability: 53.3 },
+            { name: '7-11 ท่ารถ บขส.เชียงราย (10014)', province: 'เชียงราย', region: 'ภาคเหนือ', usage: 37.74, client: 249, date: '2025-08-11', availability: 3.3 },
+            { name: '7-11 ปตท.บายพาสสระบุรี (10006)', province: 'สระบุรี', region: 'ภาคกลาง', usage: 37.37, client: 284, date: '2025-08-02', availability: 56.7 },
+            { name: '7-11 ปตท.บางปะอิน (10005)', province: 'พระนครศรีอยุธยา', region: 'ภาคกลาง', usage: 36.6, client: 236, date: '2025-08-05', availability: 190 },
+            { name: '7-11 ซอยเนินพลับหวาน (11116)', province: 'ชลบุรี', region: 'ภาคตะวันออก', usage: 35.8, client: 251, date: '2025-08-10', availability: 136.7 },
+            { name: '7-11 ปตท.หนองแค (10007)', province: 'สระบุรี', region: 'ภาคกลาง', usage: 35.78, client: 260, date: '2025-08-10', availability: 36.7 },
+            { name: '7-11 ปตท.เมืองตราด (11045)', province: 'ตราด', region: 'ภาคตะวันออก', usage: 35.2, client: 141, date: '2025-08-12', availability: 33.3 },
+            { name: '7-11 ตลาดนัดเรือบิน (12988)', province: 'สมุทรปราการ', region: 'ภาคกลาง', usage: 33.91, client: 172, date: '2025-08-03', availability: 153.3 },
+            { name: '7-11 ปตท.วังน้อย (ขาเข้า) (10004)', province: 'พระนครศรีอยุธยา', region: 'ภาคกลาง', usage: 33.7, client: 240, date: '2025-08-03', availability: 20 },
+            { name: '7-11 ปตท.บายพาสชลบุรี (ขาเข้า) (10197)', province: 'ชลบุรี', region: 'ภาคตะวันออก', usage: 33.5, client: 320, date: '2025-08-03', availability: 120 },
+            { name: '7-11 ปตท.แก่งคอย (10008)', province: 'สระบุรี', region: 'ภาคกลาง', usage: 32.9, client: 250, date: '2025-08-01', availability: 53.3 },
+            { name: '7-11 ชุมชนบ้านหนองบัว (10222)', province: 'กาญจนบุรี', region: 'ภาคตะวันตก', usage: 32.8, client: 150, date: '2025-08-11', availability: 3.3 },
+            { name: '7-11 ตลาดโต้รุ่งหัวหิน (10012)', province: 'ประจวบคีรีขันธ์', region: 'ภาคตะวันตก', usage: 32.5, client: 280, date: '2025-08-02', availability: 56.7 },
+            { name: '7-11 ปตท.บายพาสสระบุรี (ขาเข้า) (10009)', province: 'สระบุรี', region: 'ภาคกลาง', usage: 31.9, client: 270, date: '2025-08-05', availability: 190 },
+            { name: '7-11 ตลาดสดเทศบาลนครสวรรค์ (10013)', province: 'นครสวรรค์', region: 'ภาคกลาง', usage: 31.5, client: 230, date: '2025-08-10', availability: 136.7 },
+            { name: '7-11 ปตท.บางปะอิน (ขาเข้า) (10003)', province: 'พระนครศรีอยุธยา', region: 'ภาคกลาง', usage: 31.2, client: 220, date: '2025-08-10', availability: 36.7 },
+            { name: '7-11 ปตท.หนองแค (ขาเข้า) (10010)', province: 'สระบุรี', region: 'ภาคกลาง', usage: 30.8, client: 240, date: '2025-08-12', availability: 33.3 },
+            { name: '7-11 ปตท.แก่งคอย (ขาเข้า) (10011)', province: 'สระบุรี', region: 'ภาคกลาง', usage: 30.5, client: 230, date: '2025-08-03', availability: 153.3 },
+            { name: '7-11 ตลาดโรงเกลือ (10016)', province: 'สระแก้ว', region: 'ภาคตะวันออก', usage: 30.2, client: 290, date: '2025-08-03', availability: 20 },
+            { name: '7-11 ตลาดอินโดจีน (10017)', province: 'มุกดาหาร', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 29.8, client: 270, date: '2025-08-03', availability: 120 },
+            { name: '7-11 ตลาดช่องจอม (10018)', province: 'สุรินทร์', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 29.5, client: 260, date: '2025-08-01', availability: 53.3 },
+            { name: '7-11 ตลาดโรงเกลือ (เก่า) (10019)', province: 'สระแก้ว', region: 'ภาคตะวันออก', usage: 29.2, client: 280, date: '2025-08-11', availability: 3.3 },
+            { name: '7-11 ตลาดอินโดจีน (เก่า) (10020)', province: 'มุกดาหาร', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 28.8, client: 250, date: '2025-08-02', availability: 56.7 },
+            { name: '7-11 ตลาดช่องจอม (เก่า) (10021)', province: 'สุรินทร์', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 28.5, client: 240, date: '2025-08-05', availability: 190 },
+            { name: '7-11 รามอินทรา 40 แยก 11 (22680)', province: 'กรุงเทพมหานคร', region: 'ภาคกลาง', usage: 25.63, client: 99, date: '2025-08-10', availability: 136.7 },
+            { name: '7-11 ปตท.สี่แยกบ้านบัว (10144)', province: 'ร้อยเอ็ด', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 25.59, client: 143, date: '2025-08-10', availability: 36.7 },
+            { name: '7-11 นวลจันทร์ 56 (18169)', province: 'กรุงเทพมหานคร', region: 'ภาคกลาง', usage: 25.43, client: 92, date: '2025-08-12', availability: 33.3 },
+            { name: '7-11 บ้านเตว็ด (22722)', province: 'สุโขทัย', region: 'ภาคกลาง', usage: 25.13, client: 49, date: '2025-08-03', availability: 153.3 },
+            { name: '7-11 ปตท.ไทยเพิ่มพูนร้อยเอ็ด (011485)', province: 'ร้อยเอ็ด', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 25, client: 120, date: '2025-08-03', availability: 20 },
+        ].filter(b => b.province !== '#VALUE!' && b.region !== '#VALUE!');
 
-        const regionSummary = allBranchesData.reduce((acc, branch) => { const region = branch.region; if (region && region !== '#N/A') { if (!acc[region]) { acc[region] = { client: 0, usage: 0 }; } acc[region].client += branch.client; acc[region].usage += branch.usage; } return acc; }, {});
-        const provinceSummary = allBranchesData.reduce((acc, branch) => { const province = branch.province; if (province && province !== '#N/A') { if (!acc[province]) { acc[province] = { client: 0, usage: 0 }; } acc[province].client += branch.client; acc[province].usage += branch.usage; } return acc; }, {});
+        // --- Data Aggregation and Sorting ---
+        // Availability Data
+        const availabilityRawData = allBranchesData.map(d => ({ date: d.date, percent: d.availability }));
+        availabilityRawData.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const daysInMonth = availabilityRawData.map(d => new Date(d.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }));
+        const availabilityData = availabilityRawData.map(d => d.percent > 100 ? 100 : d.percent); // Cap data at 100
+        const avgAvailability = (availabilityData.reduce((a, b) => a + b, 0) / availabilityData.length).toFixed(2);
+        document.getElementById('avgAvailability').textContent = `${avgAvailability}%`;
+
+        // Top 20 Usage
+        const sortedByUsage = [...allBranchesData].sort((a, b) => b.usage - a.usage).slice(0, 20);
+        const top20UsageData = {
+            labels: sortedByUsage.map(b => b.name),
+            data: sortedByUsage.map(b => b.usage)
+        };
+        // Top 20 Clients
+        const sortedByClient = [...allBranchesData].sort((a, b) => b.client - a.client).slice(0, 20);
+        const top20ClientData = {
+            labels: sortedByClient.map(b => b.name),
+            data: sortedByClient.map(b => b.client)
+        };
+        // Region Summary
+        const regionSummary = allBranchesData.reduce((acc, branch) => { const region = branch.region; if (region) { if (!acc[region]) { acc[region] = { client: 0, usage: 0 }; } acc[region].client += branch.client; acc[region].usage += branch.usage; } return acc; }, {});
+        // Province Summary
+        const provinceSummary = allBranchesData.reduce((acc, branch) => { const province = branch.province; if (province) { if (!acc[province]) { acc[province] = { client: 0, usage: 0 }; } acc[province].client += branch.client; acc[province].usage += branch.usage; } return acc; }, {});
         
         // --- Chart Rendering ---
         const availabilityCtx = document.getElementById('availabilityChart').getContext('2d');
-        new Chart(availabilityCtx, { type: 'line', data: { labels: daysInMonth, datasets: [{ label: 'Availability (%)', data: availabilityData, borderColor: secondaryBorderColor, backgroundColor: 'rgba(75, 192, 192, 0.2)', fill: true, tension: 0.4, pointRadius: 2, pointBackgroundColor: secondaryBorderColor }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 98.5, max: 100, ticks: { callback: (value) => value + '%' } }, x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 15 } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `Availability: ${context.raw.toFixed(2)}%` } } } } });
+        new Chart(availabilityCtx, { type: 'line', data: { labels: daysInMonth, datasets: [{ label: 'Availability (%)', data: availabilityData, borderColor: secondaryBorderColor, backgroundColor: 'rgba(75, 192, 192, 0.2)', fill: true, tension: 0.4, pointRadius: 2, pointBackgroundColor: secondaryBorderColor }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks: { callback: (value) => value + '%' } }, x: { ticks: { maxRotation: 0, minRotation: 0, autoSkip: true, maxTicksLimit: 15 } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `Availability: ${context.raw.toFixed(2)}%` } } } } });
         
         const faultZoneCtx = document.getElementById('faultZoneChart').getContext('2d');
         new Chart(faultZoneCtx, { type: 'doughnut', data: { labels: faultZones, datasets: [{ label: 'จำนวน Faults', data: faultData, backgroundColor: professionalColors, hoverOffset: 4, borderWidth: 2, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 15, boxWidth: 12, usePointStyle: true, pointStyle: 'circle' } } } } });
@@ -264,7 +300,6 @@
             }
         });
 
-        // --- New Chart: Province Client Pie ---
         const provinceClientCtx = document.getElementById('provinceClientChart').getContext('2d');
         const sortedProvincesByClient = Object.entries(provinceSummary).sort(([,a],[,b]) => b.client - a.client);
         const top7Provinces = sortedProvincesByClient.slice(0, 7);
@@ -295,7 +330,6 @@
             }
         });
 
-        // --- New Chart: Region Usage Bar ---
         const regionUsageCtx = document.getElementById('regionUsageChart').getContext('2d');
         const sortedRegionsByUsage = Object.entries(regionSummary).sort(([,a],[,b]) => b.usage - a.usage);
         const regionUsageLabels = sortedRegionsByUsage.map(r => r[0]);
@@ -318,6 +352,42 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } }
+            }
+        });
+
+        // --- New Chart: Lowest Availability ---
+        const lowestAvailabilityCtx = document.getElementById('lowestAvailabilityChart').getContext('2d');
+        const sortedByLowestAvailability = [...allBranchesData]
+            .sort((a, b) => a.availability - b.availability) // Ascending sort
+            .slice(0, 10);
+
+        const lowestAvailabilityLabels = sortedByLowestAvailability.map(b => b.name);
+        const lowestAvailabilityData = sortedByLowestAvailability.map(b => b.availability);
+
+        new Chart(lowestAvailabilityCtx, {
+            type: 'bar',
+            data: {
+                labels: lowestAvailabilityLabels,
+                datasets: [{
+                    label: 'Availability (%)',
+                    data: lowestAvailabilityData,
+                    backgroundColor: dangerColor,
+                    borderColor: dangerBorderColor,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Availability (%)' }
+                    }
+                }
             }
         });
 
