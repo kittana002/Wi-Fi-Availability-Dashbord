@@ -126,12 +126,12 @@
                         <canvas id="causeCodeChart"></canvas>
                     </div>
                 </div>
-                <!-- จำนวน Fault Wi-Fi แบ่งตาม Zone -->
+                <!-- 5 อันดับวิธีแก้ปัญหา -->
                 <div class="card">
-                    <h2 class="header-title">จำนวน Fault Wi-Fi ตามโซน</h2>
-                    <p class="sub-header">สัดส่วนปัญหาที่เกิดขึ้นในแต่ละพื้นที่</p>
+                    <h2 class="header-title">5 อันดับวิธีแก้ปัญหา (Top 5 Workcode_Description)</h2>
+                    <p class="sub-header">วิธีการแก้ไขปัญหาที่ถูกใช้บ่อยที่สุด</p>
                     <div class="mt-4 chart-container" style="height: 350px;">
-                        <canvas id="faultZoneChart"></canvas>
+                        <canvas id="workcodeChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -222,15 +222,6 @@
             Chart.register(ChartDataLabels);
 
             // --- Data Section ---
-            const faultZoneData = [
-                { zone: 'กรุงเทพและปริมณฑล', faults: 120 },
-                { zone: 'ภาคเหนือ', faults: 55 },
-                { zone: 'ภาคตะวันออกเฉียงเหนือ', faults: 80 },
-                { zone: 'ภาคกลาง', faults: 60 },
-                { zone: 'ภาคตะวันออก', faults: 45 },
-                { zone: 'ภาคใต้', faults: 70 }
-            ];
-
             function parseData() {
                 const csvData = `uptime(min)	Down Time	Availability	Date	Site	จังหวัด	ภาค	Usage (Gigabytes)	Client	CAUSECODE_DESCRIPTION	WORKCODE_DESCRIPTION
 5760	2522	69.55%	2025-08-01 16:25	7-11 บ้านแม่แรม (อ.แม่ริม) (8614)	เชียงใหม่	ภาคเหนือ	18.37	96	WIFI - Access Point	Replaced
@@ -310,7 +301,8 @@
                         client: parseInt(columns[8], 10),
                         date: columns[3].split(' ')[0], // Get only YYYY-MM-DD
                         availability: parseFloat(columns[2].replace('%', '')),
-                        cause: columns[9] ? columns[9].trim() : 'ไม่ระบุ'
+                        cause: columns[9] ? columns[9].trim() : 'ไม่ระบุ',
+                        workcode: columns[10] ? columns[10].trim() : 'ไม่ระบุ'
                     };
                 }).filter(b => 
                     b && 
@@ -335,18 +327,13 @@
                 // KPIs
                 const totalUsage = allBranchesData.reduce((sum, b) => sum + b.usage, 0);
                 const totalClients = allBranchesData.reduce((sum, b) => sum + b.client, 0);
-                const problematicBranches = allBranchesData.filter(b => b.availability < 95).length;
+                const problematicBranches = allBranchesData.filter(b => b.availability < 80).length;
                 const avgAvailability = allBranchesData.length > 0 ? (allBranchesData.reduce((sum, b) => sum + b.availability, 0) / allBranchesData.length) : 0;
                 
                 document.getElementById('totalUsage').textContent = `${totalUsage.toFixed(2)} GB`;
                 document.getElementById('totalClients').textContent = totalClients.toLocaleString();
                 document.getElementById('avgAvailabilityKpi').textContent = `${avgAvailability.toFixed(2)}%`;
                 document.getElementById('problematicBranches').textContent = problematicBranches;
-
-
-                // Fault Zones for Chart
-                const faultZones = faultZoneData.map(d => d.zone);
-                const faultData = faultZoneData.map(d => d.faults);
 
                 // Availability Data
                 const availabilityRawData = allBranchesData.map(d => ({ date: d.date, percent: d.availability }));
@@ -404,6 +391,19 @@
                 const causeCodeLabels = sortedCauses.map(c => c[0]);
                 const causeCodeData = sortedCauses.map(c => c[1]);
 
+                // Workcode Summary
+                const workcodeSummary = allBranchesData.reduce((acc, branch) => {
+                    const workcode = branch.workcode;
+                    if (workcode) {
+                        acc[workcode] = (acc[workcode] || 0) + 1;
+                    }
+                    return acc;
+                }, {});
+
+                const sortedWorkcodes = Object.entries(workcodeSummary).sort(([,a],[,b]) => b - a).slice(0, 5);
+                const workcodeLabels = sortedWorkcodes.map(c => c[0]);
+                const workcodeData = sortedWorkcodes.map(c => c[1]);
+
                 
                 // --- Chart Rendering ---
                 let charts = {};
@@ -442,36 +442,28 @@
                     }
                 });
 
-                renderChart('faultZoneChart', {
-                    type: 'doughnut',
+                renderChart('workcodeChart', {
+                     type: 'bar',
                     data: {
-                        labels: faultZones,
+                        labels: workcodeLabels,
                         datasets: [{
-                            label: 'จำนวน Faults',
-                            data: faultData,
-                            backgroundColor: professionalColors,
-                            hoverOffset: 4,
-                            borderWidth: 2
+                            label: 'จำนวนครั้ง',
+                            data: workcodeData,
+                            backgroundColor: accentColor,
+                            borderColor: accentBorderColor,
+                            borderWidth: 1,
+                            borderRadius: 4
                         }]
                     },
                     options: {
+                        indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { 
-                            legend: { position: 'bottom' },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed !== null) {
-                                            label += context.parsed;
-                                        }
-                                        return label;
-                                    }
-                                }
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'จำนวนครั้งที่ใช้' }
                             }
                         }
                     }
@@ -559,7 +551,7 @@
                                     let percentage = (value*100 / sum).toFixed(2)+"%";
                                     return percentage;
                                 },
-                                color: '#fff',
+                                color: '#4A5568',
                             }
                         }
                     }
@@ -625,7 +617,7 @@
                                     let percentage = (value*100 / sum).toFixed(2)+"%";
                                     return percentage;
                                 },
-                                color: '#fff',
+                                color: '#4A5568',
                             }
                         }
                     }
