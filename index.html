@@ -179,326 +179,426 @@
         ];
 
         // 2. Branches Data (ข้อมูลสาขา)
-        // ข้อมูลใหม่จากไฟล์ CSV
-        const allBranchesData = [
-            { name: '7-11 บ้านแม่แรม (อ.แม่ริม) (8614)', province: 'เชียงใหม่', region: 'ภาคเหนือ', usage: 18.37, client: 96, date: '2025-08-01', availability: 69.55 },
-            { name: '7-11 ปตท.พีเอสวาย ท่าพระ (6206)', province: 'ขอนแก่น', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 17.81, client: 185, date: '2025-08-02', availability: 93.91 },
-            { name: '7-11 แยกปากร่วมบ่อวิน (ชลบุรี) (19412)', province: 'ชลบุรี', region: 'ภาคตะวันออก', usage: 16.54, client: 257, date: '2025-08-03', availability: 99.65 },
-            { name: '7-11 หนองปลาไหลปลวกแดง(ระยอง) (22410)', province: 'ระยอง', region: 'ภาคตะวันออก', usage: 13.66, client: 73, date: '2025-08-10', availability: 50.9 },
-            { name: '7-11 ชุมชนนวมินทร์(นครสวรรค์) (005484)', province: 'นครสวรรค์', region: 'ภาคเหนือ', usage: 12.02, client: 147, date: '2025-08-10', availability: 99.9 },
-            { name: '7-11 PTT Station ปตท.อดิศรธุรกิจ (19750)', province: 'สระบุรี', region: 'ภาคกลาง', usage: 11.45, client: 123, date: '2025-08-11', availability: 99.98 },
-            { name: '7-11 PTT Station ปตท.สหกรณ์การเกษตรย่านตาขาว (19747)', province: 'ตรัง', region: 'ภาคใต้', usage: 10.97, client: 104, date: '2025-08-12', availability: 99.97 },
-            { name: '7-11 PTT Station ปตท.บจก.ทรัพย์ไพบูลย์ปิโตรเลียม (20188)', province: 'สุราษฎร์ธานี', region: 'ภาคใต้', usage: 10.74, client: 153, date: '2025-08-13', availability: 99.99 },
-            { name: '7-11 PTT Station ปตท.บจก.โคกสูงปิโตรเลียม (20025)', province: 'สระแก้ว', region: 'ภาคตะวันออก', usage: 10.21, client: 134, date: '2025-08-14', availability: 99.95 },
-            { name: '7-11 ตลาดสดบ้านบึง (ชลบุรี) (19448)', province: 'ชลบุรี', region: 'ภาคตะวันออก', usage: 9.91, client: 140, date: '2025-08-15', availability: 99.89 },
-            { name: '7-11 PTT Station ปตท.บจก.พงษ์กิตติออยล์ (19749)', province: 'ชัยภูมิ', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 9.8, client: 133, date: '2025-08-16', availability: 99.99 },
-            { name: '7-11 PTT Station บจก.ทวีผลออยล์ (20015)', province: 'นครราชสีมา', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 9.61, client: 143, date: '2025-08-17', availability: 99.99 },
-            { name: '7-11 PTT Station ปตท.บจก.เจริญผลออยล์ (19803)', province: 'นครราชสีมา', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 9.49, client: 125, date: '2025-08-18', availability: 99.99 },
-            { name: '7-11 PTT Station ปตท.บจก.เอ็ม.พี.ปิโตรเลียม (20016)', province: 'นครราชสีมา', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 9.42, client: 120, date: '2025-08-19', availability: 99.99 },
-            { name: '7-11 PTT Station ปตท.บจก.หลักเมืองออยล์ (19804)', province: 'นครราชสีมา', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 9.17, client: 116, date: '2025-08-20', availability: 99.99 },
-            { name: '7-11 PTT Station บจก.ปิโตรเลียมเซอร์วิส (19778)', province: 'นครศรีธรรมราช', region: 'ภาคใต้', usage: 8.89, client: 111, date: '2025-08-21', availability: 99.99 },
-            { name: '7-11 PTT Station บจก.มีโชคปิโตรเลียม (19776)', province: 'นครศรีธรรมราช', region: 'ภาคใต้', usage: 8.8, client: 108, date: '2025-08-22', availability: 99.99 },
-            { name: '7-11 PTT Station บจก.สไมล์ปิโตรเลียม (19777)', province: 'นครศรีธรรมราช', region: 'ภาคใต้', usage: 8.76, client: 107, date: '2025-08-23', availability: 99.95 },
-            { name: '7-11 PTT Station ปตท.บจก.เบญจวรรณบริการ (20024)', province: 'บุรีรัมย์', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 8.7, client: 123, date: '2025-08-24', availability: 99.99 },
-            { name: '7-11 PTT Station ปตท.บจก.พี.พี.ดี.ปิโตรเลียม (20017)', province: 'นครราชสีมา', region: 'ภาคตะวันออกเฉียงเหนือ', usage: 8.64, client: 110, date: '2025-08-25', availability: 99.99 }
-        ].filter(b => b.province !== '#VALUE!' && b.region !== '#VALUE!');
+        async function fetchData() {
+            const csvData = `uptime(min)	Down Time	Availability	Date	Site	จังหวัด	ภาค	Usage (Gigabytes)	Client
+5760	2522	69.55%	2025-08-01 16:25	7-11 บ้านแม่แรม (อ.แม่ริม) (8614)	เชียงใหม่	ภาคเหนือ	18.37	96
+24462	1585	93.91%	2025-08-02 13:25	7-11 ปตท.พีเอสวาย ท่าพระ (6206)	ขอนแก่น	ภาคตะวันออกเฉียงเหนือ	17.81	185
+24399	85	99.65%	2025-08-03 15:10	7-11 แยกปากร่วมบ่อวิน (ชลบุรี) (19412)	ชลบุรี	ภาคตะวันออก	16.54	257
+1438	1387	50.90%	2025-08-10 13:25	7-11 หนองปลาไหลปลวกแดง(ระยอง) (22410)	ระยอง	ภาคตะวันออก	13.66	73
+10505	10	99.90%	2025-08-10 13:25	7-11 ชุมชนนวมินทร์(นครสวรรค์) (005484)	นครสวรรค์	ภาคกลาง	12.86	112
+102674	2923	97.23%	2025-08-23 10:40	7-11 หนองประทีป (2299)	เชียงใหม่	ภาคเหนือ	12.77	94
+4517	1372	76.70%	2025-08-16 13:26	7-11 พหลโยธินท่าศาลา (ลพบุรี) (9539)	ลพบุรี	ภาคกลาง	12.29	98
+15911	24	99.85%	2025-08-09 14:11	7-11 ร้านค้าสวัสดิการฐานทัพเรือสัตหีบ (22910)	ชลบุรี	ภาคตะวันออก	12.19	65
+14628	1120	92.89%	2025-08-02 13:25	7-11 เวียงทอง (8633)	แพร่	ภาคเหนือ	11.38	92
+23040	1545	93.72%	2025-08-03 13:25	7-11 PTTOR พระราม 4-พระโขนง (18527)	กรุงเทพมหานคร	ภาคกลาง	9.89	135
+25882	160	99.39%	2025-08-02 13:25	7-11 ประตูน้ำพระอินทร์ ซอย 8 (4040)	พระนครศรีอยุธยา	ภาคกลาง	9.73	167
+15831	980	94.17%	2025-08-04 16:25	7-11 วงเวียนรถไฟศรีสะเกษ (4881)	#VALUE!	#VALUE!	9.1	175
+11811	2973	79.89%	2025-08-10 9:18	7-11 ปตท.ดอกคำใต้ 2 (13686)	พะเยา	ภาคเหนือ	9.05	59
+3960	846	82.40%	2025-08-14 8:25	7-11 มอ.สงขลา (หอพักชาย ) (9577)	สงขลา	ภาคใต้	8.74	127
+945	6220	13.19%	2025-08-15 16:30	7-11 ตลาด เอ.ซี.สายไหม (6011)	กรุงเทพมหานคร	ภาคกลาง	7.92	619
+7891	4210	65.21%	2025-08-12 15:55	7-11 Sony Canteen 1 (ชลบุรี) (22852)	ชลบุรี	ภาคตะวันออก	7.91	120
+3216	2875	52.80%	2025-08-03 13:25	7-11 ชุมชนหนองน้ำส้ม 2 (6422)	พระนครศรีอยุธยา	ภาคกลาง	7.6	107
+2854	331	89.61%	2025-08-07 12:06	7-11 พหลโยธิน 15 จุด 2 (5843)	กรุงเทพมหานคร	ภาคกลาง	7.47	149
+1986	342	85.31%	2025-08-06 13:23	7-11 ท่าข้าม 10 (6703)	กรุงเทพมหานคร	ภาคกลาง	7.3	165
+3720	381	90.71%	2025-08-15 16:01	7-11 ก.ม. 25 (647)	กรุงเทพมหานคร	ภาคกลาง	7.21	132
+24480	55	99.78%	2025-08-03 14:25	7-11 ปตท.เหนือคลอง (4761)	กระบี่	ภาคใต้	7.17	175
+25920	2350	91.69%	2025-08-02 19:50	7-11 ปตท.เกรียงศักดิ์ยโสธร (10178)	#VALUE!	#VALUE!	7.11	84
+12914	1640	88.73%	2025-08-10 13:25	7-11 หน้าลือคำหาญ (1582)	อุบลราชธานี	ภาคตะวันออกเฉียงเหนือ	6.58	122
+21891	1435	93.85%	2025-08-03 13:25	7-11 แยกเรือนแพ (5074)	พิษณุโลก	ภาคกลาง	6.56	93
+17348	1495	92.07%	2025-08-07 13:25	7-11 ท่าลาน 2 (6825)	สระบุรี	ภาคกลาง	6.53	48
+8446	1480	85.09%	2025-08-23 10:40	7-11 PTTOR ลำลูกกาคลอง 3 (16214)	ปทุมธานี	ภาคกลาง	6.33	296
+20035	2378	89.39%	2025-08-04 16:26	7-11 บายพาสหนองคาย (10616)	หนองคาย	ภาคตะวันออกเฉียงเหนือ	6.22	92
+8876	1440	86.04%	2025-08-09 14:40	7-11 บ้านศรีดอนไชย 1 (5094)	เชียงใหม่	ภาคเหนือ	5.49	87
+8770	6107	58.95%	2025-08-12 11:09	7-11 สุภาพงษ์ 1 แยก 3 (13643)	กรุงเทพมหานคร	ภาคกลาง	5.36	216
+94	7180	1.29%	2025-08-11 13:25	7-11 ธวัชดินแดง (10843)	ร้อยเอ็ด	ภาคตะวันออกเฉียงเหนือ	5.06	65
+742	1539	32.53%	2025-08-14 13:26	7-11 ปตท.ศรีเมืองใหม่ (13378)	อุบลราชธานี	ภาคตะวันออกเฉียงเหนือ	4.87	167
+728	1180	38.16%	2025-08-06 13:25	7-11 ธาดาทาว์นเคิร์ฟ-เขาขยาย (ชลบุรี) (16851)	ชลบุรี	ภาคตะวันออก	4.84	80
+10035	1257	88.87%	2025-08-07 13:47	7-11 ตลาดเพชรเกษม 77 (5981)	กรุงเทพมหานคร	ภาคกลาง	4.77	152
+17486	955	94.82%	2025-08-24 16:11	7-11 PTTOR ศรีสาคร (18009)	นราธิวาส	ภาคใต้	4.74	94
+2098	1375	60.41%	2025-08-04 13:25	7-11 ปตท.พระธาตุเรณู (11087)	นครพนม	ภาคตะวันออกเฉียงเหนือ	4.73	112
+24334	1060	95.83%	2025-08-03 14:40	7-11 บ้านป่าแดง (อ.ไชยปราการ) (18858)	เชียงใหม่	ภาคเหนือ	4.58	65
+7142	1361	83.99%	2025-08-03 9:24	7-11 รพ.ชัยนาท (1933)	ชัยนาท	ภาคกลาง	4.56	99
+25709	5344	82.79%	2025-08-02 19:03	7-11 ประชาราษฎร์บำเพ็ญ 18 (19233)	กรุงเทพมหานคร	ภาคกลาง	4.51	278
+2823	1337	67.86%	2025-08-04 16:10	7-11 รามอินทรา กม.4/2 (1009)	กรุงเทพมหานคร	ภาคกลาง	4.33	240
+163954	2507	98.49%	2025-08-23 16:25	7-11 ตลาดแม่ระมาด (5133)	ตาก	ภาคตะวันตก	4.3	104
+33810	5687	85.60%	2025-08-15 16:01	7-11 อนามัยท่าข้าม (18443)	กรุงเทพมหานคร	ภาคกลาง	4.25	70
+27900	130	99.54%	2025-08-21 13:25	7-11 PTTOR ชนะชัยไร่น้อย (14559)	อุบลราชธานี	ภาคตะวันออกเฉียงเหนือ	4.25	108
+2023	232	89.71%	2025-08-13 8:25	7-11 ชุมชนสัมปทวน (นครชัยศรี) (22473)	นครปฐม	ภาคกลาง	4.06	32
+8368	1045	88.90%	2025-08-04 14:40	7-11 ริมห้วยวังนอง (17965)	อุบลราชธานี	ภาคตะวันออกเฉียงเหนือ	4	54
+17096	3196	84.25%	2025-08-06 13:25	7-11 PTTOR พระราม 2 กม. 9 (16787)	กรุงเทพมหานคร	ภาคกลาง	3.64	171
+17096	3196	84.25%	2025-08-06 13:25	7-11 PTTOR พระราม 2 กม. 9 (16787)	กรุงเทพมหานคร	ภาคกลาง	3.64	171
+51909	1539	97.12%	2025-08-24 13:26	7-11 พระราชวังบางปะอิน (749)	พระนครศรีอยุธยา	ภาคกลาง	3.63	184
+61920	287	99.54%	2025-08-24 13:26	7-11 เบญจมิตร (1732)	กรุงเทพมหานคร	ภาคกลาง	3.6	153
+12905	271	97.94%	2025-08-11 12:10	7-11 ชุมชนบ้านนาเดิม (14235)	สุราษฎร์ธานี	ภาคใต้	3.57	110
+22340	2878	88.59%	2025-08-01 10:01	7-11 นวมินทร์ ซ.3(เอแบคบางนา) (12066)	#SPILL!	#SPILL!	3.53	109
+8978	1122	88.89%	2025-08-13 15:41	7-11 พระราม 2 บางกระดี่ (14524)	กรุงเทพมหานคร	ภาคกลาง	3.49	207
+18823	925	95.32%	2025-08-05 16:40	7-11 PTTOR ราชพฤกษ์-สาทร (15576)	กรุงเทพมหานคร	ภาคกลาง	3.46	194
+18823	925	95.32%	2025-08-05 16:40	7-11 PTTOR ราชพฤกษ์-สาทร (15576)	กรุงเทพมหานคร	ภาคกลาง	3.46	194
+17614	1390	92.69%	2025-08-02 13:25	7-11 ชุมชนศรีเพชรการเคหะ (15477)	สมุทรปราการ	ภาคกลาง	3.42	69
+5717	159	97.29%	2025-08-16 13:26	7-11 331 โป่งสะเก็ด (11408)	ชลบุรี	ภาคตะวันออก	3.41	85
+18415	1135	94.19%	2025-08-07 13:25	7-11 บุญอยู่ (1112)	กรุงเทพมหานคร	ภาคกลาง	3.22	348
+1515	3012	33.47%	2025-08-05 13:25	7-11 บ้านหนองบัว (อ.ฝาง) (14121)	เชียงใหม่	ภาคเหนือ	3.18	79
+18022	3025	85.63%	2025-08-02 10:25	7-11 LPN รัชดาท่าพระ (9773)	กรุงเทพมหานคร	ภาคกลาง	3.17	58
+17384	1440	92.35%	2025-08-06 13:04	7-11 PTTOR ราชภัฏสกลนคร (16087)	สกลนคร	ภาคตะวันออกเฉียงเหนือ	3.16	225
+902	1268	41.57%	2025-08-21 13:25	7-11 แยกวัดศรีศรัทธาธรรม (19504)	สมุทรสงคราม	ภาคกลาง	3.12	84
+56451	6417	89.79%	2025-08-19 8:09	7-11 ปตท.สหกรณ์หนองโพ (4046)	ราชบุรี	ภาคตะวันตก	3.07	53
+4014	189	95.50%	2025-08-16 13:26	7-11 ทุ่งสะเดา(แปลงยาว) (15837)	ฉะเชิงเทรา	ภาคตะวันออก	3.05	57
+2959	1440	67.27%	2025-08-06 10:35	7-11 ลี้ (6433)	ลำพูน	ภาคเหนือ	3.04	112
+15809	100	99.37%	2025-08-09 14:25	7-11 เคหะบางนา (8307)	กรุงเทพมหานคร	ภาคกลาง	3.04	164
+11693	1405	89.27%	2025-08-11 13:25	7-11 นิคมสินสาครพลาซ่า (19492)	#VALUE!	#VALUE!	3	70
+43383	1075	97.58%	2025-08-23 14:10	7-11 ร้านค้าสวัสดิการโรงพยาบาลพระพุทธบาท (13975)	สระบุรี	ภาคกลาง	2.97	85
+12855	1135	91.89%	2025-08-11 13:25	7-11 โพธิสาร(พุทธมณฑลสาย1) (15416)	กรุงเทพมหานคร	ภาคกลาง	2.92	141
+920	4443	17.15%	2025-08-22 18:04	7-11 อดุลยาราม ซอย 1 (17251)	ขอนแก่น	ภาคตะวันออกเฉียงเหนือ	2.91	198
+1509	143	91.34%	2025-08-03 10:40	7-11 ใหม่เกตุงาม (9025)	ชลบุรี	ภาคตะวันออก	2.88	123
+4483	1399	76.22%	2025-08-16 13:26	7-11 หทัยราษฎร์ 41 (ม.ฮาบิเทีย) (11835)	กรุงเทพมหานคร	ภาคกลาง	2.85	99
+8819	10	99.89%	2025-08-11 13:25	7-11 บายพาสบ้านจั่น (10753)	อุดรธานี	ภาคตะวันออกเฉียงเหนือ	2.85	97
+20124	418	97.97%	2025-08-06 9:10	7-11 ตลาดนัดเพชรเกษม 122 (16750)	สมุทรสาคร	ภาคกลาง	2.83	93
+46396	25	99.95%	2025-08-23 14:40	7-11 นิรันดร์คอนโด (สุขุมวิท 93) (3670)	กรุงเทพมหานคร	ภาคกลาง	2.83	193
+4200	40	99.06%	2025-08-12 13:55	7-11 ตลาดสดท่าอิฐ 2 (5382)	นนทบุรี	ภาคกลาง	2.81	182
+12748	4185	75.28%	2025-08-09 13:28	7-11 ถนนบริพัตร (5081)	เพชรบุรี	ภาคตะวันตก	2.78	200
+6152	1403	81.43%	2025-08-24 13:26	7-11 ปตท.NGVกุดกว้าง (11453)	ขอนแก่น	ภาคตะวันออกเฉียงเหนือ	2.78	42
+40281	1120	97.29%	2025-08-22 13:25	7-11 PTTOR บุดี (ขาออก) (18970)	ยะลา	ภาคใต้	2.78	65
+15930	100	99.38%	2025-08-09 12:25	7-11 ตลาดจารุวัฒน์ (กองดินแกลง) (18191)	ระยอง	ภาคตะวันออก	2.78	98
+9621	1440	86.98%	2025-08-07 15:10	7-11 เวฬุวนาราม ซ.9 (15411)	กรุงเทพมหานคร	ภาคกลาง	2.77	275
+18794	1105	94.45%	2025-08-23 13:55	7-11 พระพุทธบาท (285)	สระบุรี	ภาคกลาง	2.76	47
+24786	1298	95.02%	2025-08-02 13:25	7-11 เอกชัย 126 (13003)	กรุงเทพมหานคร	ภาคกลาง	2.75	63
+1411	5849	19.44%	2025-08-15 15:03	7-11 บัวใหญ่ (0976)	นครราชสีมา	ภาคตะวันออกเฉียงเหนือ	2.64	146
+24238	1120	95.58%	2025-08-03 13:25	7-11 บ้านหนองแก(บ้านบึง) (14342)	ชลบุรี	ภาคตะวันออก	2.64	54
+3057	240	92.72%	2025-08-18 11:11	7-11 UTK ราชมงคลกรุงเทพ (8928)	กรุงเทพมหานคร	ภาคกลาง	2.62	35
+6060	2559	70.31%	2025-08-14 15:56	7-11 หนองจอก (บางปะกง) (15258)	ฉะเชิงเทรา	ภาคตะวันออก	2.61	76
+18077	1186	93.84%	2025-08-07 12:34	7-11 คูบางหลวง (6432)	ปทุมธานี	ภาคกลาง	2.58	161
+33195	40	99.88%	2025-08-24 13:40	7-11 Property Perfect เมโทรลักซ์ รัชดา (14645)	กรุงเทพมหานคร	ภาคกลาง	2.53	129
+6180	1330	82.29%	2025-08-12 10:25	7-11 ปตท.Duplex มอเตอร์เวย์ ขาเข้า (11216)	จังหวัดฉะเชิงเทรา	ไม่พบข้อมูล	2.5	64`;
 
+            const lines = csvData.trim().split('\n');
+            const header = lines.shift(); // remove header
+            
+            const allBranchesData = lines.map(line => {
+                const columns = line.split('\t');
+                if (columns.length < 9) return null; 
 
-        // ---------------------------
-        // END DATA SECTION
-        // ---------------------------
-
-        // --- Data Aggregation and Sorting ---
-        // Fault Zones for Chart
-        const faultZones = faultZoneData.map(d => d.zone);
-        const faultData = faultZoneData.map(d => d.faults);
-
-        // Availability Data
-        const availabilityRawData = allBranchesData.map(d => ({ date: d.date, percent: d.availability }));
-        availabilityRawData.sort((a, b) => new Date(a.date) - new Date(b.date));
-        const daysInMonth = availabilityRawData.map(d => new Date(d.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }));
-        const availabilityData = availabilityRawData.map(d => d.percent > 100 ? 100 : d.percent); // Cap data at 100
-        const avgAvailability = availabilityData.length > 0 ? (availabilityData.reduce((a, b) => a + b, 0) / availabilityData.length).toFixed(2) : "0.00";
-        document.getElementById('avgAvailability').textContent = `${avgAvailability}%`;
-
-        // Top 20 Usage
-        const sortedByUsage = [...allBranchesData].sort((a, b) => b.usage - a.usage).slice(0, 20);
-        const top20UsageData = {
-            labels: sortedByUsage.map(b => b.name),
-            data: sortedByUsage.map(b => b.usage)
-        };
-        // Top 20 Clients
-        const sortedByClient = [...allBranchesData].sort((a, b) => b.client - a.client).slice(0, 20);
-        const top20ClientData = {
-            labels: sortedByClient.map(b => b.name),
-            data: sortedByClient.map(b => b.client)
-        };
-        // Region Summary
-        const regionSummary = allBranchesData.reduce((acc, branch) => {
-            const region = branch.region;
-            if (region) {
-                if (!acc[region]) {
-                    acc[region] = { client: 0, usage: 0 };
-                }
-                acc[region].client += branch.client;
-                acc[region].usage += branch.usage;
-            }
-            return acc;
-        }, {});
-        // Province Summary
-        const provinceSummary = allBranchesData.reduce((acc, branch) => {
-            const province = branch.province;
-            if (province) {
-                if (!acc[province]) {
-                    acc[province] = { client: 0, usage: 0 };
-                }
-                acc[province].client += branch.client;
-                acc[province].usage += branch.usage;
-            }
-            return acc;
-        }, {});
-        
-        // --- Chart Rendering ---
-        const availabilityCtx = document.getElementById('availabilityChart').getContext('2d');
-        new Chart(availabilityCtx, {
-            type: 'line',
-            data: {
-                labels: daysInMonth,
-                datasets: [{
-                    label: 'Availability (%)',
-                    data: availabilityData,
-                    borderColor: secondaryBorderColor,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: secondaryBorderColor
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: false, title: { display: true, text: 'Availability (%)' } }
-                }
-            }
-        });
-
-        const faultZoneCtx = document.getElementById('faultZoneChart').getContext('2d');
-        new Chart(faultZoneCtx, {
-            type: 'doughnut',
-            data: {
-                labels: faultZones,
-                datasets: [{
-                    label: 'จำนวน Faults',
-                    data: faultData,
-                    backgroundColor: professionalColors,
-                    hoverOffset: 4,
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-
-        const topUsageCtx = document.getElementById('topUsageChart').getContext('2d');
-        new Chart(topUsageCtx, {
-            type: 'bar',
-            data: {
-                labels: top20UsageData.labels,
-                datasets: [{
-                    label: 'Usage (GB)',
-                    data: top20UsageData.data,
-                    backgroundColor: primaryColor,
-                    borderColor: primaryBorderColor,
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Usage (GB)' }
-                    }
-                }
-            }
-        });
-
-        const topUsersCtx = document.getElementById('topUsersChart').getContext('2d');
-        new Chart(topUsersCtx, {
-            type: 'bar',
-            data: {
-                labels: top20ClientData.labels,
-                datasets: [{
-                    label: 'จำนวน Client',
-                    data: top20ClientData.data,
-                    backgroundColor: secondaryColor,
-                    borderColor: secondaryBorderColor,
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'จำนวน Client' }
-                    }
-                }
-            }
-        });
-
-        const regionClientCtx = document.getElementById('regionClientChart').getContext('2d');
-        const regionLabels = Object.keys(regionSummary);
-        const regionClientData = regionLabels.map(region => regionSummary[region].client);
-        new Chart(regionClientCtx, {
-            type: 'pie',
-            data: {
-                labels: regionLabels,
-                datasets: [{
-                    label: 'จำนวน Client',
-                    data: regionClientData,
-                    backgroundColor: professionalColors,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
-        });
-
-        const provinceUsageCtx = document.getElementById('provinceUsageChart').getContext('2d');
-        const sortedProvinces = Object.entries(provinceSummary).sort(([,a],[,b]) => b.usage - a.usage).slice(0, 10);
-        const provinceLabels = sortedProvinces.map(p => p[0]);
-        const provinceUsageData = sortedProvinces.map(p => p[1].usage.toFixed(2));
-        new Chart(provinceUsageCtx, {
-            type: 'bar',
-            data: {
-                labels: provinceLabels,
-                datasets: [{
-                    label: 'Usage (GB)',
-                    data: provinceUsageData,
-                    backgroundColor: accentColor,
-                    borderColor: accentBorderColor,
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } }
-            }
-        });
-
-        const provinceClientCtx = document.getElementById('provinceClientChart').getContext('2d');
-        const sortedProvincesByClient = Object.entries(provinceSummary).sort(([,a],[,b]) => b.client - a.client);
-        const top7Provinces = sortedProvincesByClient.slice(0, 7);
-        const otherProvincesClient = sortedProvincesByClient.slice(7).reduce((sum, current) => sum + current[1].client, 0);
-        const provinceClientLabels = top7Provinces.map(p => p[0]);
-        const provinceClientData = top7Provinces.map(p => p[1].client);
-        if (otherProvincesClient > 0) {
-            provinceClientLabels.push('อื่น ๆ');
-            provinceClientData.push(otherProvincesClient);
+                return {
+                    name: columns[4],
+                    province: columns[5],
+                    region: columns[6],
+                    usage: parseFloat(columns[7]),
+                    client: parseInt(columns[8], 10),
+                    date: columns[3].split(' ')[0], // Get only YYYY-MM-DD
+                    availability: parseFloat(columns[2].replace('%', ''))
+                };
+            }).filter(b => 
+                b && 
+                b.province && 
+                b.region && 
+                b.province !== '#VALUE!' && 
+                b.region !== '#VALUE!' && 
+                b.province !== '#SPILL!' && 
+                b.region !== '#SPILL!' &&
+                !isNaN(b.availability) &&
+                !isNaN(b.usage) &&
+                !isNaN(b.client)
+            );
+            
+            return allBranchesData;
         }
-        new Chart(provinceClientCtx, {
-            type: 'pie',
-            data: {
-                labels: provinceClientLabels,
-                datasets: [{
-                    label: 'จำนวน Client',
-                    data: provinceClientData,
-                    backgroundColor: professionalColors,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' }
+
+        async function renderDashboard() {
+            const allBranchesData = await fetchData();
+            
+            // --- Data Aggregation and Sorting ---
+            // Fault Zones for Chart
+            const faultZones = faultZoneData.map(d => d.zone);
+            const faultData = faultZoneData.map(d => d.faults);
+
+            // Availability Data
+            const availabilityRawData = allBranchesData.map(d => ({ date: d.date, percent: d.availability }));
+            availabilityRawData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            const daysInMonth = availabilityRawData.map(d => new Date(d.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }));
+            const availabilityData = availabilityRawData.map(d => d.percent > 100 ? 100 : d.percent); // Cap data at 100
+            const avgAvailability = availabilityData.length > 0 ? (availabilityData.reduce((a, b) => a + b, 0) / availabilityData.length).toFixed(2) : "0.00";
+            document.getElementById('avgAvailability').textContent = `${avgAvailability}%`;
+
+            // Top 20 Usage
+            const sortedByUsage = [...allBranchesData].sort((a, b) => b.usage - a.usage).slice(0, 20);
+            const top20UsageData = {
+                labels: sortedByUsage.map(b => b.name),
+                data: sortedByUsage.map(b => b.usage)
+            };
+            // Top 20 Clients
+            const sortedByClient = [...allBranchesData].sort((a, b) => b.client - a.client).slice(0, 20);
+            const top20ClientData = {
+                labels: sortedByClient.map(b => b.name),
+                data: sortedByClient.map(b => b.client)
+            };
+            // Region Summary
+            const regionSummary = allBranchesData.reduce((acc, branch) => {
+                const region = branch.region;
+                if (region) {
+                    if (!acc[region]) {
+                        acc[region] = { client: 0, usage: 0 };
+                    }
+                    acc[region].client += branch.client;
+                    acc[region].usage += branch.usage;
                 }
-            }
-        });
-
-        const regionUsageCtx = document.getElementById('regionUsageChart').getContext('2d');
-        const sortedRegionsByUsage = Object.entries(regionSummary).sort(([,a],[,b]) => b.usage - a.usage);
-        const regionUsageLabels = sortedRegionsByUsage.map(r => r[0]);
-        const regionUsageData = sortedRegionsByUsage.map(r => r[1].usage.toFixed(2));
-        new Chart(regionUsageCtx, {
-            type: 'bar',
-            data: {
-                labels: regionUsageLabels,
-                datasets: [{
-                    label: 'Usage (GB)',
-                    data: regionUsageData,
-                    backgroundColor: primaryColor,
-                    borderColor: primaryBorderColor,
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } }
-            }
-        });
-
-        // --- New Chart: Lowest Availability ---
-        const lowestAvailabilityCtx = document.getElementById('lowestAvailabilityChart').getContext('2d');
-        const sortedByLowestAvailability = [...allBranchesData]
-            .sort((a, b) => a.availability - b.availability) // Ascending sort
-            .slice(0, 10);
-
-        const lowestAvailabilityLabels = sortedByLowestAvailability.map(b => b.name);
-        const lowestAvailabilityData = sortedByLowestAvailability.map(b => b.availability);
-
-        new Chart(lowestAvailabilityCtx, {
-            type: 'bar',
-            data: {
-                labels: lowestAvailabilityLabels,
-                datasets: [{
-                    label: 'Availability (%)',
-                    data: lowestAvailabilityData,
-                    backgroundColor: dangerColor,
-                    borderColor: dangerBorderColor,
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: {
-                        beginAtZero: false,
-                        title: { display: true, text: 'Availability (%)' }
+                return acc;
+            }, {});
+            // Province Summary
+            const provinceSummary = allBranchesData.reduce((acc, branch) => {
+                const province = branch.province;
+                if (province) {
+                    if (!acc[province]) {
+                        acc[province] = { client: 0, usage: 0 };
+                    }
+                    acc[province].client += branch.client;
+                    acc[province].usage += branch.usage;
+                }
+                return acc;
+            }, {});
+            
+            // --- Chart Rendering ---
+            const availabilityCtx = document.getElementById('availabilityChart').getContext('2d');
+            new Chart(availabilityCtx, {
+                type: 'line',
+                data: {
+                    labels: daysInMonth,
+                    datasets: [{
+                        label: 'Availability (%)',
+                        data: availabilityData,
+                        borderColor: secondaryBorderColor,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: secondaryBorderColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: false, title: { display: true, text: 'Availability (%)' } }
                     }
                 }
+            });
+
+            const faultZoneCtx = document.getElementById('faultZoneChart').getContext('2d');
+            new Chart(faultZoneCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: faultZones,
+                    datasets: [{
+                        label: 'จำนวน Faults',
+                        data: faultData,
+                        backgroundColor: professionalColors,
+                        hoverOffset: 4,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            const topUsageCtx = document.getElementById('topUsageChart').getContext('2d');
+            new Chart(topUsageCtx, {
+                type: 'bar',
+                data: {
+                    labels: top20UsageData.labels,
+                    datasets: [{
+                        label: 'Usage (GB)',
+                        data: top20UsageData.data,
+                        backgroundColor: primaryColor,
+                        borderColor: primaryBorderColor,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Usage (GB)' }
+                        }
+                    }
+                }
+            });
+
+            const topUsersCtx = document.getElementById('topUsersChart').getContext('2d');
+            new Chart(topUsersCtx, {
+                type: 'bar',
+                data: {
+                    labels: top20ClientData.labels,
+                    datasets: [{
+                        label: 'จำนวน Client',
+                        data: top20ClientData.data,
+                        backgroundColor: secondaryColor,
+                        borderColor: secondaryBorderColor,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'จำนวน Client' }
+                        }
+                    }
+                }
+            });
+
+            const regionClientCtx = document.getElementById('regionClientChart').getContext('2d');
+            const regionLabels = Object.keys(regionSummary);
+            const regionClientData = regionLabels.map(region => regionSummary[region].client);
+            new Chart(regionClientCtx, {
+                type: 'pie',
+                data: {
+                    labels: regionLabels,
+                    datasets: [{
+                        label: 'จำนวน Client',
+                        data: regionClientData,
+                        backgroundColor: professionalColors,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            const provinceUsageCtx = document.getElementById('provinceUsageChart').getContext('2d');
+            const sortedProvinces = Object.entries(provinceSummary).sort(([,a],[,b]) => b.usage - a.usage).slice(0, 10);
+            const provinceLabels = sortedProvinces.map(p => p[0]);
+            const provinceUsageData = sortedProvinces.map(p => p[1].usage.toFixed(2));
+            new Chart(provinceUsageCtx, {
+                type: 'bar',
+                data: {
+                    labels: provinceLabels,
+                    datasets: [{
+                        label: 'Usage (GB)',
+                        data: provinceUsageData,
+                        backgroundColor: accentColor,
+                        borderColor: accentBorderColor,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } }
+                }
+            });
+
+            const provinceClientCtx = document.getElementById('provinceClientChart').getContext('2d');
+            const sortedProvincesByClient = Object.entries(provinceSummary).sort(([,a],[,b]) => b.client - a.client);
+            const top7Provinces = sortedProvincesByClient.slice(0, 7);
+            const otherProvincesClient = sortedProvincesByClient.slice(7).reduce((sum, current) => sum + current[1].client, 0);
+            const provinceClientLabels = top7Provinces.map(p => p[0]);
+            const provinceClientData = top7Provinces.map(p => p[1].client);
+            if (otherProvincesClient > 0) {
+                provinceClientLabels.push('อื่น ๆ');
+                provinceClientData.push(otherProvincesClient);
             }
-        });
+            new Chart(provinceClientCtx, {
+                type: 'pie',
+                data: {
+                    labels: provinceClientLabels,
+                    datasets: [{
+                        label: 'จำนวน Client',
+                        data: provinceClientData,
+                        backgroundColor: professionalColors,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            const regionUsageCtx = document.getElementById('regionUsageChart').getContext('2d');
+            const sortedRegionsByUsage = Object.entries(regionSummary).sort(([,a],[,b]) => b.usage - a.usage);
+            const regionUsageLabels = sortedRegionsByUsage.map(r => r[0]);
+            const regionUsageData = sortedRegionsByUsage.map(r => r[1].usage.toFixed(2));
+            new Chart(regionUsageCtx, {
+                type: 'bar',
+                data: {
+                    labels: regionUsageLabels,
+                    datasets: [{
+                        label: 'Usage (GB)',
+                        data: regionUsageData,
+                        backgroundColor: primaryColor,
+                        borderColor: primaryBorderColor,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, title: { display: true, text: 'Usage (GB)' } } }
+                }
+            });
+
+            // --- New Chart: Lowest Availability ---
+            const lowestAvailabilityCtx = document.getElementById('lowestAvailabilityChart').getContext('2d');
+            const sortedByLowestAvailability = [...allBranchesData]
+                .sort((a, b) => a.availability - b.availability) // Ascending sort
+                .slice(0, 10);
+
+            const lowestAvailabilityLabels = sortedByLowestAvailability.map(b => b.name);
+            const lowestAvailabilityData = sortedByLowestAvailability.map(b => b.availability);
+
+            new Chart(lowestAvailabilityCtx, {
+                type: 'bar',
+                data: {
+                    labels: lowestAvailabilityLabels,
+                    datasets: [{
+                        label: 'Availability (%)',
+                        data: lowestAvailabilityData,
+                        backgroundColor: dangerColor,
+                        borderColor: dangerBorderColor,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            beginAtZero: false,
+                            title: { display: true, text: 'Availability (%)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        renderDashboard();
 
     </script>
 </body>
