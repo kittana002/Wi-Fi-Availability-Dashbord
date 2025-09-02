@@ -73,7 +73,16 @@
                 </button>
             </div>
              <!-- KPI Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="kpi-card">
+                    <div class="kpi-icon bg-purple-100 text-purple-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">สาขาทั้งหมด</p>
+                        <p class="text-2xl font-bold text-gray-800" id="totalBranchesKpi">0</p>
+                    </div>
+                </div>
                 <div class="kpi-card">
                     <div class="kpi-icon bg-blue-100 text-blue-600">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" x2="12.01" y1="20" y2="20"/></svg>
@@ -192,11 +201,28 @@
                 </div>
             </div>
             
-            <!-- Section 5: Lowest Availability -->
+            <!-- Section 5: Availability Rankings -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card">
+                    <h2 class="header-title text-center">10 อันดับสาขาที่ Availability ต่ำที่สุด</h2>
+                    <div class="chart-container mt-2" style="height: 350px;">
+                        <canvas id="lowestAvailabilityChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2 class="header-title text-center">10 อันดับสาขาที่ Availability สูงที่สุด</h2>
+                    <div class="chart-container mt-2" style="height: 350px;">
+                        <canvas id="highestAvailabilityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Availability Distribution -->
             <div class="card">
-                <h2 class="header-title text-center">10 อันดับสาขาที่ Availability ต่ำที่สุด</h2>
+                <h2 class="header-title text-center">สัดส่วน Availability ตามช่วง</h2>
+                <p class="sub-header text-center">จำนวนสาขาในแต่ละช่วงเปอร์เซ็นต์ความพร้อมใช้งาน</p>
                 <div class="chart-container mt-2" style="height: 350px;">
-                    <canvas id="lowestAvailabilityChart"></canvas>
+                    <canvas id="availabilityDistributionChart"></canvas>
                 </div>
             </div>
 
@@ -715,11 +741,13 @@
                 
                 // --- Data Aggregation and Sorting ---
                 // KPIs
+                const totalBranches = allBranchesData.length;
                 const totalUsage = allBranchesData.reduce((sum, b) => sum + b.usage, 0);
                 const totalClients = allBranchesData.reduce((sum, b) => sum + b.client, 0);
                 const problematicBranches = allBranchesData.filter(b => b.availability < 80).length;
                 const avgAvailability = allBranchesData.length > 0 ? (allBranchesData.reduce((sum, b) => sum + b.availability, 0) / allBranchesData.length) : 0;
                 
+                document.getElementById('totalBranchesKpi').textContent = totalBranches.toLocaleString();
                 document.getElementById('totalUsage').textContent = `${totalUsage.toFixed(2)} GB`;
                 document.getElementById('totalClients').textContent = totalClients.toLocaleString();
                 document.getElementById('avgAvailabilityKpi').textContent = `${avgAvailability.toFixed(2)}%`;
@@ -1037,7 +1065,7 @@
                     }
                 });
 
-                // --- New Chart: Lowest Availability ---
+                // --- Lowest Availability Chart ---
                 const sortedByLowestAvailability = [...allBranchesData]
                     .sort((a, b) => a.availability - b.availability) // Ascending sort
                     .slice(0, 10);
@@ -1071,6 +1099,106 @@
                         }
                     }
                 });
+                
+                // --- Highest Availability Chart ---
+                const sortedByHighestAvailability = [...allBranchesData]
+                    .sort((a, b) => b.availability - a.availability) // Descending sort
+                    .slice(0, 10);
+
+                const highestAvailabilityLabels = sortedByHighestAvailability.map(b => b.name);
+                const highestAvailabilityData = sortedByHighestAvailability.map(b => b.availability);
+
+                renderChart('highestAvailabilityChart', {
+                    type: 'bar',
+                    data: {
+                        labels: highestAvailabilityLabels,
+                        datasets: [{
+                            label: 'Availability (%)',
+                            data: highestAvailabilityData,
+                            backgroundColor: secondaryColor,
+                            borderColor: secondaryBorderColor,
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                suggestedMax: 100,
+                                title: { display: true, text: 'Availability (%)' }
+                            }
+                        }
+                    }
+                });
+
+
+                // --- Availability Distribution Chart ---
+                const availabilityRanges = {
+                    '0-20%': 0,
+                    '21-40%': 0,
+                    '41-60%': 0,
+                    '61-80%': 0,
+                    '81-100%': 0,
+                };
+                allBranchesData.forEach(branch => {
+                    const avail = branch.availability;
+                    if (avail >= 0 && avail <= 20) availabilityRanges['0-20%']++;
+                    else if (avail >= 21 && avail <= 40) availabilityRanges['21-40%']++;
+                    else if (avail >= 41 && avail <= 60) availabilityRanges['41-60%']++;
+                    else if (avail >= 61 && avail <= 80) availabilityRanges['61-80%']++;
+                    else if (avail >= 81) availabilityRanges['81-100%']++;
+                });
+
+                renderChart('availabilityDistributionChart', {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(availabilityRanges),
+                        datasets: [{
+                            label: 'จำนวนสาขา',
+                            data: Object.values(availabilityRanges),
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(255, 159, 64, 0.8)',
+                                'rgba(255, 205, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(54, 162, 235, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 159, 64, 1)',
+                                'rgba(255, 205, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'top',
+                                formatter: (value) => value > 0 ? value : '',
+                                color: '#4A5568'
+                            }
+                        },
+                        scales: { 
+                            y: { 
+                                beginAtZero: true,
+                                title: { display: true, text: 'จำนวนสาขา' } 
+                            } 
+                        }
+                    }
+                });
             }
 
             renderDashboard();
@@ -1079,3 +1207,4 @@
     </script>
 </body>
 </html>
+
